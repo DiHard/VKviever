@@ -33,14 +33,40 @@ class Groups(models.Model):
 
 
 class Stories(models.Model):
-    story_id = models.CharField('Groups id', max_length=250)
+    story_id = models.CharField('Story id', max_length=250)
     group = models.ForeignKey(Groups, on_delete=models.CASCADE)
-    start_date = models.CharField('Groups id', max_length=250)
-    story_type = models.CharField('Groups id', max_length=250)
+    start_date = models.DateTimeField('Дата и время публикации')
+    story_type = models.CharField('Тип публикации', max_length=250)
 
     def __str__(self):
-        return self.name
+        return self.story_id + " - " + self.group.name
 
     class Meta:
         verbose_name = "Story"
         verbose_name_plural = "Stories"
+
+
+class Posts(models.Model):
+    POST_TYPE_CHOICES = (
+        (1, 'Видео'),
+        (2, 'Пост'),
+        (3, 'Репост клипа'),
+        (4, 'Статья'),
+    )
+    post_id = models.CharField('Пост id', max_length=250)
+    group = models.ForeignKey(Groups, on_delete=models.CASCADE)
+    start_date = models.DateTimeField('Дата и время публикации')
+    post_type = models.IntegerField('Тип публикации', choices=POST_TYPE_CHOICES)
+    likes = models.IntegerField("Лийки")
+    comments = models.IntegerField("Коментарии")
+    reposts = models.IntegerField("Репосты")
+    views = models.IntegerField("Просмотры")
+    text = models.CharField('Краткий текст поста', max_length=250)
+
+
+    def __str__(self):
+        return str(self.post_type) + " - " + self.group.name + " - Дата: " + str(self.start_date) + " - " + str(self.text)
+
+    class Meta:
+        verbose_name = "Пост"
+        verbose_name_plural = "Посты"
