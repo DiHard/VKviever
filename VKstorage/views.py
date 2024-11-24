@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from rest_framework.viewsets import ModelViewSet
 
-# Create your views here.
+from VKstorage.models import Groups
+from VKstorage.serializers import AactivityInGroupsSerializer
+
+
+class AactivityInGroupsView(ModelViewSet):
+    queryset = Groups.objects.all()
+    serializer_class = AactivityInGroupsSerializer
+
