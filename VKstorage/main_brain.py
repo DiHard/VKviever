@@ -1,5 +1,6 @@
 import os, sys
 import datetime
+from time import sleep
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(CURRENT_DIR))
@@ -49,7 +50,8 @@ def get_stories():
                         new_story = Stories()
                         new_story.story_id = story['id']
                         new_story.group = Groups.objects.get(group_id=story['owner_id'] * -1)
-                        new_story.start_date = datetime.datetime.fromtimestamp(story['date'])
+                        new_story.date = datetime.datetime.fromtimestamp(story['date'])
+                        new_story.unix_date = story['date']
                         new_story.story_type = story['type']
                         new_story.save()
                         print("Сохранили!")
@@ -105,7 +107,8 @@ def get_posts(short_name, count):
                 post = Posts()
                 post.post_id = item['id']
                 post.group = Groups.objects.get(group_id=item['owner_id'] * -1)
-                post.start_date = datetime.datetime.fromtimestamp(item['date'])
+                post.date = datetime.datetime.fromtimestamp(item['date'])
+                post.unix_date = item['date']
                 post.likes = item['likes']['count']
                 post.comments = item['comments']['count']
                 post.reposts = item['reposts']['count']
@@ -131,9 +134,11 @@ def get_posts(short_name, count):
                 post.save()
 
 
-
-get_posts('allufa', 10)
 # refresh_token()
+get_posts('allufa', 100)
+print('ok')
+sleep(3)
+print('ok2')
 get_stories()
 
 

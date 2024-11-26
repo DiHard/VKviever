@@ -3,7 +3,7 @@ from rest_framework.routers import SimpleRouter
 from VKstorage import views
 
 router = SimpleRouter()
-router.register('api/keywords', views.AactivityInGroupsView)
+router.register('api/activityingroups', views.AactivityInGroupsView)
 
 urlpatterns = [
     # path('', views.index, name='home'),

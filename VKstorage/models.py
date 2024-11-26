@@ -35,7 +35,8 @@ class Groups(models.Model):
 class Stories(models.Model):
     story_id = models.CharField('Story id', max_length=250)
     group = models.ForeignKey(Groups, on_delete=models.CASCADE)
-    start_date = models.DateTimeField('Дата и время публикации')
+    date = models.DateTimeField('Дата и время публикации')
+    unix_date = models.IntegerField('Дата и время публикации UNIX')
     story_type = models.CharField('Тип публикации', max_length=250)
 
     def __str__(self):
@@ -55,7 +56,8 @@ class Posts(models.Model):
     )
     post_id = models.CharField('Пост id', max_length=250)
     group = models.ForeignKey(Groups, on_delete=models.CASCADE)
-    start_date = models.DateTimeField('Дата и время публикации')
+    date = models.DateTimeField('Дата и время публикации')
+    unix_date = models.IntegerField('Дата и время публикации UNIX')
     post_type = models.IntegerField('Тип публикации', choices=POST_TYPE_CHOICES)
     likes = models.IntegerField("Лийки")
     comments = models.IntegerField("Коментарии")
