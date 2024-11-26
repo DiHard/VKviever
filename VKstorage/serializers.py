@@ -13,19 +13,11 @@ class StoriesSerializer(ModelSerializer):
         fields = '__all__'
 
 class AactivityInGroupsSerializer(ModelSerializer):
-    posts = serializers.SerializerMethodField()
     posts_count = serializers.SerializerMethodField()
-    stories = serializers.SerializerMethodField()
     stories_count = serializers.SerializerMethodField()
     class Meta:
         model = Groups
-        fields = ['id', 'name', 'short_name', 'posts_count', 'stories_count', 'posts', 'stories']
-
-    def get_posts(self, obj):
-        date_from = self.context['view'].request.query_params.get('from')
-        date_to = self.context['view'].request.query_params.get('to')
-        queryset = Posts.objects.filter(group=obj).filter(unix_date__gte=date_from).filter(unix_date__lte=date_to)
-        return [PostsSerializer(q).data for q in queryset]
+        fields = ['id', 'name', 'short_name', 'posts_count', 'stories_count']
 
     def get_posts_count(self, obj):
         date_from = self.context['view'].request.query_params.get('from')
@@ -38,10 +30,6 @@ class AactivityInGroupsSerializer(ModelSerializer):
             if q.post_type == 3: posts['short_video'] += 1
             if q.post_type == 4: posts['link'] += 1
         return posts
-
-    def get_stories(self, obj):
-        queryset = Stories.objects.filter(group=obj)
-        return [StoriesSerializer(q).data for q in queryset]
 
     def get_stories_count(self, obj):
         date_from = self.context['view'].request.query_params.get('from')
