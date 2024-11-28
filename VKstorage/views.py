@@ -1,9 +1,10 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 from VKstorage.models import Groups, Posts
 from VKstorage.serializers import AactivityInGroupsSerializer, PostsSerializer
 
-# @login_required
+@login_required
 def index(request):
     zacup_list = Groups.objects.all().exclude(id=20)
     content = {
