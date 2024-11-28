@@ -9,13 +9,19 @@
 
 <div class="card border-light shadow p-3 bg-body rounded mt-3">
 
-<div class="card-body px-0 py-0">
-<div class="btn-group">
-  <a href="#" class="btn btn-light" onclick="load()" data-button-name="Свободный">Свободный</a>
-  <a href="#" class="btn btn-light" onclick="load()" data-button-name="На просчете">На просчете</a>
-  <a href="#" class="btn btn-light" onclick="load()" data-button-name="Участвуем">Участвуем</a>
-  <a href="#" class="btn btn-light" onclick="load()" data-button-name="Победа">Победа</a>
-</div>
+    <div class="d-flex justify-content-between">
+        <div>
+            <h5 class="d-inline">Сформировать отчет за:</h5>
+            <button class="btn btn-outline-primary align-baseline" onclick="load_today()" data-button-name="Свободный">Сегодня</button>
+            <button class="btn btn-outline-primary align-baseline" onclick="current_month()" data-button-name="На просчете">Текущий месяц</button>
+        </div>
+        <div>
+              <span class="d-inline">Другой диапазон:</span>
+              <input type="date" id="date_from" style="max-width: 130px;" class="d-inline form-control">
+              <input type="date" id="date_to" style="max-width: 130px;" class="d-inline form-control">
+            <button class="btn btn-outline-primary align-baseline d-inline" onclick="load()" data-button-name="Участвуем">Сформировать</button>
+        </div>
+    </div>
 <hr>
 <div class="table-responsive scrollbar">
     <table class="table table-sm fs-10 mb-0 overflow-hidden">
@@ -33,7 +39,7 @@
     </table>
 </div>
 </div>
-</div>
+
 
 
 <script>
@@ -63,7 +69,40 @@
                 });
         }
         // Загрузка данных при загрузке страницы
-        load(1732506771, 1732648632);
+
+
+function load_today() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const day = now.getDate();
+  const startOfDay = new Date(year, month, day, 0, 0, 1); // 00:00:01
+  load(Math.floor(startOfDay.getTime() / 1000), Math.floor(Date.now() / 1000));
+    // прописываем дату в поля
+  const today = String(now.getDate()).padStart(2, '0');
+  const formattedDate = `${year}-${month+1}-${today}`;
+  document.getElementById('date_from').value = formattedDate;
+  document.getElementById('date_to').value = formattedDate;
+}
+
+function current_month() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth(); // Месяцы в JavaScript нумеруются с 0 (январь)
+  const firstDay = new Date(year, month, 1);
+  load(Math.floor(firstDay.getTime() / 1000), Math.floor(Date.now() / 1000));
+      // прописываем дату в поля
+  const today = String(now.getDate()).padStart(2, '0');
+  const formattedDate_from = `${year}-${month+1}-01`;
+  const formattedDate = `${year}-${month+1}-${today}`;
+  document.getElementById('date_from').value = formattedDate_from;
+  document.getElementById('date_to').value = formattedDate;
+}
+
+load_today()
+
+
+
 </script>
 
 {% endblock %}
