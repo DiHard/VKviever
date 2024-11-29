@@ -5,9 +5,9 @@
 
 
 {% block content %}
-<h1>Отчет за сегодня</h1>
+<h1 id="h1">Отчет</h1>
 
-<div class="card border-light shadow p-3 bg-body rounded mt-3">
+<div class="card border-light shadow p-3 bg-body rounded mt-3 rounded-4">
 
     <div class="d-flex justify-content-between">
         <div>
@@ -19,7 +19,7 @@
               <span class="d-inline">Другой диапазон:</span>
               <input type="date" id="date_from" style="max-width: 130px;" class="d-inline form-control">
               <input type="date" id="date_to" style="max-width: 130px;" class="d-inline form-control">
-            <button class="btn btn-outline-primary align-baseline d-inline" onclick="load()" data-button-name="Участвуем">Сформировать</button>
+            <button class="btn btn-outline-primary align-baseline d-inline" onclick="load_range()" data-button-name="Участвуем">Сформировать</button>
         </div>
     </div>
 <hr>
@@ -51,9 +51,6 @@
                     const tableBody = document.getElementById('tableBody');
                     tableBody.innerHTML = '';
                     data.forEach(item => {
-                        const statuses = JSON.parse(localStorage.getItem('activeButtons')) || ["Свободный", "На просчете", "Участвуем", "Победа"];
-
-
                             const row = document.createElement('tr');
                             row.innerHTML = `
                                 <td>${item.name}</td>
@@ -68,10 +65,12 @@
                     });
                 });
         }
-        // Загрузка данных при загрузке страницы
+
 
 
 function load_today() {
+  const title_h1 = document.getElementById('h1');
+  title_h1.innerHTML = 'Отчет за сегодня';
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth();
@@ -83,9 +82,12 @@ function load_today() {
   const formattedDate = `${year}-${month+1}-${today}`;
   document.getElementById('date_from').value = formattedDate;
   document.getElementById('date_to').value = formattedDate;
+
 }
 
 function current_month() {
+  const title_h1 = document.getElementById('h1');
+  title_h1.innerHTML = 'Отчет за месяц';
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth(); // Месяцы в JavaScript нумеруются с 0 (январь)
@@ -99,9 +101,27 @@ function current_month() {
   document.getElementById('date_to').value = formattedDate;
 }
 
+function dateToUnixTimestamp(dateString, h, m, s) {
+  const dateParts = dateString.split('-');
+  const year = parseInt(dateParts[0], 10);
+  const month = parseInt(dateParts[1], 10) - 1; // Месяцы в JavaScript нумеруются с 0
+  const day = parseInt(dateParts[2], 10);
+  const date = new Date(year, month, day, h, m, s);
+  return Math.floor(date.getTime() / 1000)
+  }
+
+
+function load_range() {
+  const title_h1 = document.getElementById('h1');
+  title_h1.innerHTML = 'Отчет за период';
+  const formattedDate_from = document.getElementById('date_from').value;
+  const formattedDate_to = document.getElementById('date_to').value;
+  day_from = dateToUnixTimestamp(formattedDate_from, 0, 0, 1)
+  day_to = dateToUnixTimestamp(formattedDate_to, 23, 59, 59)
+  load(day_from, day_to)
+}
+
 load_today()
-
-
 
 </script>
 

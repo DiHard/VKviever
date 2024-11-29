@@ -6,12 +6,7 @@ from VKstorage.serializers import AactivityInGroupsSerializer, PostsSerializer
 
 @login_required
 def index(request):
-    zacup_list = Groups.objects.all().exclude(id=20)
-    content = {
-        'title': 'Академия закупок Алексея Дитриха',
-        'zacup_list': zacup_list
-    }
-    return render(request, 'VKstorage/index.html', content)# Create your views here.
+    return render(request, 'VKstorage/index.html', {'title': 'Формирование отчета'})# Create your views here.
 
 
 class AactivityInGroupsView(ModelViewSet):
