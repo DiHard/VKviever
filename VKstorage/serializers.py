@@ -2,6 +2,20 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from VKstorage.models import Stories, Posts, Groups
 
+class GroupsSerializer(ModelSerializer):
+    class Meta:
+        model = Groups
+        # fields = '__all__'
+        fields = ['id', 'name']
+
+    def create(self, validated_data):
+        instance = Groups(**validated_data)
+        instance.group_id = "some_default_group_id"  # Устанавливаем значение вручную
+        instance.short_name = "some_short_name"  # Устанавливаем значение вручную
+        instance.last_update ="2024-11-11"  # Устанавливаем значение вручную
+        instance.save()
+        return instance
+
 class PostsSerializer(ModelSerializer):
     class Meta:
         model = Posts

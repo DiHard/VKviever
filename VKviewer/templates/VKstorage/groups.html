@@ -1,0 +1,107 @@
+{% extends 'VKstorage/base.html' %}
+
+
+{% block title %}{{ title }}{% endblock %}
+
+
+{% block content %}
+
+<div class="col">
+			<div class="card shadow  mt-4" id="cardchats">
+				<div class="card-header bg-primary-subtle text-primary-emphasis">
+					Список пабликов
+				</div>
+				<div class="card-body" >
+					<table class="table table-hover" id="chats_table">
+					  <thead>
+						<tr>
+						  <th scope="col">#</th>
+						  <th scope="col">Паблики</th>
+						  <th class="text-center" scope="col">Удалить</th>
+						</tr>
+					  </thead>
+					  <tbody id="chats_table_body">
+					  </tbody>
+					</table>
+					<form class="input-group mb-2 mt-4" id="UrlForm">
+					  {% csrf_token %}
+					  <input type="text" class="form-control" placeholder="Ссылка на паблик" id="chat_url">
+					  <button class="btn btn-outline-secondary rounded-end" type="submit" id="load_chats">Добавить</button>
+						<div class="invalid-feedback" id="invalid-feedback-UrlForm">
+						  Неизвестная ошибка.
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+
+<script>
+function load_table() {
+// Получение тела таблицы
+const tableBody = document.getElementById("chats_table_body");
+
+tableBody.innerHTML = "";
+// Запрос к API
+fetch('/api/groups/')
+  .then(response => response.json())
+  .then(data => {
+    // Создание строк таблицы
+    data.forEach((item, index) => {
+		const row = document.createElement('tr');
+
+		row.innerHTML = `
+			<td>${index + 1}</td>
+			<td>${item.name}</td>
+			<td>${item.id}</td>
+		`;
+
+		tableBody.appendChild(row);
+
+});
+  })
+  .catch(err => console.log('error: ' + err));
+}
+
+// Загружаем таблицу при загрузке скрипта
+load_table()
+
+
+
+const form = document.getElementById('UrlForm');
+var csrf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault(); // Предотвращаем стандартное поведение формы
+
+            const data = {
+                  name: document.getElementById('chat_url').value.endsWith('/'),
+                  group_id: '32554556',
+                  short_name: 'test',
+                  last_update: 2024-11-11
+            };
+
+            fetch('/api/chat/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrf_token
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                   return response.json().then(result => {throw new Error(result.chat_url[0])})
+                    }
+                return response.json();
+            })
+            .then(data => {
+                // Обрабатываем успешный ответ от сервера
+                console.log('Данные успешно отправлены:', data);
+                // Можем очистить форму или выполнить другие действия
+                form.reset();
+};
+
+</script>
+
+{% endblock %}
