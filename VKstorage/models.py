@@ -67,7 +67,7 @@ class Posts(models.Model):
 
 
     def __str__(self):
-        return str(self.post_type) + " - " + self.group.name + " - Дата: " + str(self.start_date) + " - " + str(self.text)
+        return str(self.post_type) + " - " + self.group.name + " - Дата: " + str(self.date) + " - " + str(self.text)
 
     class Meta:
         verbose_name = "Пост"
