@@ -21,5 +21,6 @@ class PostsView(ModelViewSet):
     serializer_class = PostsSerializer
 
 class GroupsView(ModelViewSet):
+    print('Вью в действии')
     queryset = Groups.objects.all()
     serializer_class = GroupsSerializer

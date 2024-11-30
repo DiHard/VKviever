@@ -75,13 +75,9 @@ var csrf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value;
             event.preventDefault(); // Предотвращаем стандартное поведение формы
 
             const data = {
-                  name: document.getElementById('chat_url').value.endsWith('/'),
-                  group_id: '32554556',
-                  short_name: 'test',
-                  last_update: 2024-11-11
+                  name: document.getElementById('chat_url').value,
             };
-
-            fetch('/api/chat/', {
+            fetch('/api/groups/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -91,7 +87,7 @@ var csrf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value;
             })
             .then(response => {
                 if (!response.ok) {
-                   return response.json().then(result => {throw new Error(result.chat_url[0])})
+                   return response.json().then(result => {throw new Error(result.name[0])})
                     }
                 return response.json();
             })
@@ -100,7 +96,17 @@ var csrf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value;
                 console.log('Данные успешно отправлены:', data);
                 // Можем очистить форму или выполнить другие действия
                 form.reset();
-};
+			})
+			.catch(error => {
+                console.error(error);
+                const value_error_message = document.getElementById('invalid-feedback-UrlForm');
+                const value_error_input = document.getElementById('chat_url');
+                value_error_input.className += " is-invalid"
+                value_error_message.innerHTML = error
+                setTimeout(() => { value_error_input.setAttribute("class", "form-control") }, 5000);
+                // Обрабатываем ошибку, например, выводим сообщение пользователю
+            });
+		});
 
 </script>
 

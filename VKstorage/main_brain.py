@@ -33,7 +33,7 @@ def get_stories():
         "access_token": setting.access_token,
         "v": setting.vkapi_version
         }
-    response = requests.post(url, params=params)
+    response = requests.get(url, params=params)
     result = response.json()
     print(result)
 
@@ -54,7 +54,7 @@ def get_stories():
                         new_story.unix_date = story['date']
                         new_story.story_type = story['type']
                         new_story.save()
-                        print("Сохранили!")
+                        print("Информация о сторис получена")
 
 
 
@@ -67,7 +67,7 @@ def get_posts(short_name, count):
         "domain": short_name,
         "v": setting.vkapi_version
         }
-    response = requests.post(url, params=params)
+    response = requests.get(url, params=params)
     result = response.json()
     print(result)
     if result['response']['count']==0:
@@ -143,15 +143,32 @@ def get_posts(short_name, count):
                 post.save()
 
 
+def get_group_data(short_name):
+    setting = Settings.objects.get(id=1)
+    url = "https://api.vk.com/method/groups.getById"
+    params = {
+        "access_token": setting.access_token,
+        "group_id": short_name,
+        "v": setting.vkapi_version
+        }
+    response = requests.get(url, params=params)
+    result = response.json()['response']['groups'][0]
+    print(result)
+    return result
+
+
+get_group_data("allufa")
+
+
 # refresh_token()
 # sleep(3)
 # get_posts('allufa', 100)
 # sleep(3)
-get_posts('sportsrules', 100)
-print('ok')
-sleep(3)
-print('ok2')
-get_stories()
+# get_posts('sportsrules', 100)
+# print('ok')
+# sleep(3)
+# print('ok2')
+# get_stories()
 
 
 def test():

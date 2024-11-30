@@ -1,18 +1,37 @@
+from datetime import datetime
+
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
+
+from VKstorage.main_brain import get_group_data
 from VKstorage.models import Stories, Posts, Groups
 
 class GroupsSerializer(ModelSerializer):
     class Meta:
         model = Groups
-        # fields = '__all__'
         fields = ['id', 'name']
+
+    def validate_name(self, value):
+        """Проверка на дубликат chat_url"""
+        if Groups.objects.filter(short_name=value[9 + (value[8:99].find('/')):99]).exists():
+            raise ValidationError("Ссылка на группу уже была добавлена прежде.")
+        if value[0:8] != "https://":
+            raise ValidationError("Ссылка на группу должна начинаться с https://")
+        if value.count('/') > 4:
+            raise ValidationError("Данный вид ссылок не поддерживается")
+        return value
 
     def create(self, validated_data):
         instance = Groups(**validated_data)
-        instance.group_id = "some_default_group_id"  # Устанавливаем значение вручную
-        instance.short_name = "some_short_name"  # Устанавливаем значение вручную
-        instance.last_update ="2024-11-11"  # Устанавливаем значение вручную
+        print('Сериалайзер в действии')
+        print(validated_data)
+        data = get_group_data(validated_data['name'][9 + (validated_data['name'][8:99].find('/')):99])
+        print(data)
+        instance.name = data['name']
+        instance.group_id = data['id']  # Устанавливаем значение вручную
+        instance.short_name = data['screen_name']  # Устанавливаем значение вручную
+        instance.last_update = datetime.today().date()  # Устанавливаем значение вручную
         instance.save()
         return instance
 
