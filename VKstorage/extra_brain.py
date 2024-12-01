@@ -11,6 +11,6 @@ def get_group_data(short_name):
         "v": setting.vkapi_version
         }
     response = requests.get(url, params=params)
-    result = response.json()['response']['groups'][0]
+    result = response.json()
     print(result)
     return result
