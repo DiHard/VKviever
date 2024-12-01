@@ -27,19 +27,19 @@ def refresh_token():
     print("Новый токен получен и сохранен.")
 
 
-def get_stories():
+def get_stories(owner_id):
     setting = Settings.objects.get(id=1)
     url = "https://api.vk.com/method/stories.get"
     params = {
         "access_token": setting.access_token,
-        "v": setting.vkapi_version
+        "v": setting.vkapi_version,
+        "owner_id": int(owner_id)*-1
         }
     response = requests.get(url, params=params)
     result = response.json()
-    # print(result)
-
+    print(result)
     if result['response']['count']==0:
-        print('Нет сторис доступных к просмотру')
+        print(' - Нет сторис доступных к просмотру')
     else:
         groups = result['response']['items']
         for group in groups:
@@ -54,8 +54,7 @@ def get_stories():
                         new_story.unix_date = story['date']
                         new_story.story_type = story['type']
                         new_story.save()
-                        print("Информация о сторис получена")
-
+                        print(" - Информация о сторис получена")
 
 
 def get_posts(short_name, count):
@@ -108,7 +107,7 @@ def get_posts(short_name, count):
                 post.save()
             else:
                 # print('Сохраняем новый пост!')
-                # print(item)
+                print(item)
                 post = Posts()
                 post.post_id = item['id']
                 post.group = Groups.objects.get(group_id=item['owner_id'] * -1)
@@ -162,7 +161,9 @@ while True:
         group.save()
         get_posts(group.short_name, count)
         sleep(2)
-    get_stories()
+        get_stories(group.group_id)
+        sleep(1)
+
     print(f"Завершен цикл № {nomer}. Пауза 10 секунд")
     print("-- -- -- -- --")
     nomer += 1

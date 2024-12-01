@@ -13,8 +13,11 @@ class GroupsSerializer(ModelSerializer):
         fields = ['id', 'name']
 
     def validate_name(self, value):
-        """Проверка на дубликат chat_url"""
-        if Groups.objects.filter(short_name=value[9 + (value[8:99].find('/')):99]).exists():
+        short_name = value[9 + (value[8:99].find('/')):99]
+        data = get_group_data(short_name)
+        if 'error' in data:
+            raise ValidationError("Ошибка получения данных о группе.")
+        if Groups.objects.filter(short_name=short_name).exists():
             raise ValidationError("Ссылка на группу уже была добавлена прежде.")
         if value[0:8] != "https://":
             raise ValidationError("Ссылка на группу должна начинаться с https://")
@@ -31,7 +34,7 @@ class GroupsSerializer(ModelSerializer):
         instance.name = data['name']
         instance.group_id = data['id']  # Устанавливаем значение вручную
         instance.short_name = data['screen_name']  # Устанавливаем значение вручную
-        instance.last_update = datetime.today().date()  # Устанавливаем значение вручную
+        instance.last_update = '2024-01-01'  # Устанавливаем значение вручную
         instance.save()
         return instance
 
