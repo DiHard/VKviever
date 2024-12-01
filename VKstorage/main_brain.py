@@ -1,5 +1,6 @@
 import os, sys
 import datetime
+import time
 from time import sleep
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -35,14 +36,13 @@ def get_stories():
         }
     response = requests.get(url, params=params)
     result = response.json()
-    print(result)
+    # print(result)
 
     if result['response']['count']==0:
         print('Нет сторис доступных к просмотру')
     else:
         groups = result['response']['items']
         for group in groups:
-            print('------')
             stories = group['stories']
             for story in stories:
                 if not Stories.objects.filter(story_id=story['id']).exists():
@@ -69,15 +69,15 @@ def get_posts(short_name, count):
         }
     response = requests.get(url, params=params)
     result = response.json()
-    print(result)
+    # print(result)
     if result['response']['count']==0:
         print('Нет записей, доступных к просмотру')
     else:
         items = result['response']['items']
-        print(items)
-        print('------')
+        # print(items)
+        # print('------')
         for item in items:
-            if  item['attachments']: attachments = item['attachments']
+            if item['attachments']: attachments = item['attachments']
             if Posts.objects.filter(post_id=item['id']).exists():
                 post = Posts.objects.get(post_id=item['id'])
                 post.likes = item['likes']['count']
@@ -107,8 +107,8 @@ def get_posts(short_name, count):
                     post.post_type = 2
                 post.save()
             else:
-                print('Сохраняем новый пост!')
-                print(item)
+                # print('Сохраняем новый пост!')
+                # print(item)
                 post = Posts()
                 post.post_id = item['id']
                 post.group = Groups.objects.get(group_id=item['owner_id'] * -1)
@@ -143,38 +143,27 @@ def get_posts(short_name, count):
                 post.save()
 
 
-def get_group_data(short_name):
-    setting = Settings.objects.get(id=1)
-    url = "https://api.vk.com/method/groups.getById"
-    params = {
-        "access_token": setting.access_token,
-        "group_id": short_name,
-        "v": setting.vkapi_version
-        }
-    response = requests.get(url, params=params)
-    result = response.json()['response']['groups'][0]
-    print(result)
-    return result
-
-
-get_group_data("allufa")
-
-
-# refresh_token()
-# sleep(3)
-# get_posts('allufa', 100)
-# sleep(3)
-# get_posts('sportsrules', 100)
-# print('ok')
-# sleep(3)
-# print('ok2')
-# get_stories()
-
-
-def test():
-    # story = Stories.objects.filter(id=1).exists()
-    story = datetime.datetime.fromtimestamp(1732363673)
-    print(story)
-    # group = Groups.objects.get(group_id=37739473)
-
-# test()
+refresh_time = 0
+nomer = 1
+while True:
+    print(f"Начинаем цикл № {nomer}")
+    all_groups = Groups.objects.all()
+    if refresh_time+2700 < int(time.time()):
+        refresh_token()
+        refresh_time = int(time.time())
+        sleep(1)
+    for group in all_groups:
+        if group.last_update < datetime.date.today():
+            count = 100
+        else:
+            count = 20
+        print(f' - Для {group.short_name} запрашиваем {count} постов')
+        group.last_update = datetime.date.today()
+        group.save()
+        get_posts(group.short_name, count)
+        sleep(2)
+    get_stories()
+    print(f"Завершен цикл № {nomer}. Пауза 10 секунд")
+    print("-- -- -- -- --")
+    nomer += 1
+    sleep(10)

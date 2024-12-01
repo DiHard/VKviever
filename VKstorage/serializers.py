@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 
-from VKstorage.main_brain import get_group_data
+from VKstorage.extra_brain import get_group_data
 from VKstorage.models import Stories, Posts, Groups
 
 class GroupsSerializer(ModelSerializer):
