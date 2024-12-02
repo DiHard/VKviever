@@ -59,10 +59,6 @@ class Posts(models.Model):
     date = models.DateTimeField('Дата и время публикации')
     unix_date = models.IntegerField('Дата и время публикации UNIX')
     post_type = models.IntegerField('Тип публикации', choices=POST_TYPE_CHOICES)
-    likes = models.IntegerField("Лийки")
-    comments = models.IntegerField("Коментарии")
-    reposts = models.IntegerField("Репосты")
-    views = models.IntegerField("Просмотры")
     text = models.CharField('Краткий текст поста', max_length=250)
 
 

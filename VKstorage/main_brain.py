@@ -37,7 +37,6 @@ def get_stories(owner_id):
         }
     response = requests.get(url, params=params)
     result = response.json()
-    print(result)
     if result['response']['count']==0:
         print(' - Нет сторис доступных к просмотру')
     else:
@@ -68,21 +67,14 @@ def get_posts(short_name, count):
         }
     response = requests.get(url, params=params)
     result = response.json()
-    # print(result)
     if result['response']['count']==0:
         print('Нет записей, доступных к просмотру')
     else:
         items = result['response']['items']
-        # print(items)
-        # print('------')
         for item in items:
             if item['attachments']: attachments = item['attachments']
             if Posts.objects.filter(post_id=item['id']).exists():
                 post = Posts.objects.get(post_id=item['id'])
-                post.likes = item['likes']['count']
-                post.comments = item['comments']['count']
-                post.reposts = item['reposts']['count']
-                post.views = item['views']['count']
                 post.text = (item['text'])[0:50]
                 type_power = 0
                 if item['attachments']:
@@ -106,17 +98,11 @@ def get_posts(short_name, count):
                     post.post_type = 2
                 post.save()
             else:
-                # print('Сохраняем новый пост!')
-                print(item)
                 post = Posts()
                 post.post_id = item['id']
                 post.group = Groups.objects.get(group_id=item['owner_id'] * -1)
                 post.date = datetime.datetime.fromtimestamp(item['date'])
                 post.unix_date = item['date']
-                post.likes = item['likes']['count']
-                post.comments = item['comments']['count']
-                post.reposts = item['reposts']['count']
-                post.views = item['views']['count']
                 post.text = (item['text'])[0:50]
                 type_power = 0
                 # TO DO этот кусок можно вывести в функцию
@@ -147,23 +133,23 @@ nomer = 1
 while True:
     print(f"Начинаем цикл № {nomer}")
     all_groups = Groups.objects.all()
-    if refresh_time+2700 < int(time.time()):
-        refresh_token()
-        refresh_time = int(time.time())
-        sleep(1)
-    for group in all_groups:
-        if group.last_update < datetime.date.today():
-            count = 100
-        else:
-            count = 20
-        print(f' - Для {group.short_name} запрашиваем {count} постов')
-        group.last_update = datetime.date.today()
-        group.save()
-        get_posts(group.short_name, count)
-        sleep(2)
-        get_stories(group.group_id)
-        sleep(1)
-
+    if len(all_groups):
+        if refresh_time+2700 < int(time.time()):
+            refresh_token()
+            refresh_time = int(time.time())
+            sleep(1)
+        for group in all_groups:
+            if group.last_update < datetime.date.today():
+                count = 100
+            else:
+                count = 20
+            print(f' - Для {group.short_name} запрашиваем {count} постов')
+            group.last_update = datetime.date.today()
+            group.save()
+            get_posts(group.short_name, count)
+            sleep(2)
+            get_stories(group.group_id)
+            sleep(1)
     print(f"Завершен цикл № {nomer}. Пауза 10 секунд")
     print("-- -- -- -- --")
     nomer += 1
