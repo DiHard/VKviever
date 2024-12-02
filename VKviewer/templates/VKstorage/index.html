@@ -5,38 +5,40 @@
 
 
 {% block content %}
-<h1 id="h1">Отчет</h1>
-
-<div class="card border-light shadow p-3 bg-body rounded mt-3 rounded-4">
-
-    <div class="d-flex justify-content-between">
+<div class="d-flex justify-content-between">
+    <h1 id="h1">Отчет</h1>
+    <div class="d-flex justify-content-end mt-2">
         <div>
-            <h5 class="d-inline">Сформировать отчет за:</h5>
-            <button class="btn btn-outline-primary align-baseline" onclick="load_today()" data-button-name="Свободный">Сегодня</button>
-            <button class="btn btn-outline-primary align-baseline" onclick="current_month()" data-button-name="На просчете">Текущий месяц</button>
-        </div>
-        <div>
-              <span class="d-inline">Другой диапазон:</span>
-              <input type="date" id="date_from" style="max-width: 130px;" class="d-inline form-control">
-              <input type="date" id="date_to" style="max-width: 130px;" class="d-inline form-control">
-            <button class="btn btn-outline-primary align-baseline d-inline" onclick="load_range()" data-button-name="Участвуем">Сформировать</button>
+            <input type="date" id="date_from" style="max-width: 130px;" class="d-inline form-control">
+            <input type="date" id="date_to" style="max-width: 130px;" class="d-inline form-control">
+            <button class="btn btn-light align-baseline" onclick="load_range()" data-button-name="Участвуем">Сформировать</button>
+            <button class="btn btn-light align-baseline" onclick="current_month()" data-button-name="На просчете">Текущий месяц</button>
+            <button class="btn btn-light align-baseline" onclick="load_today()" data-button-name="Свободный">Сегодня</button>
         </div>
     </div>
-<hr>
-<div class="table-responsive scrollbar">
-    <table class="table table-sm fs-10 mb-0 overflow-hidden">
-        <thead >
-            <tr>
-                <th style="min-width:250px;" class="bg-secondary-subtle">Паблик</th>
-                <th style="min-width:130px;" class="bg-secondary-subtle">Видео</th>
-                <th class="bg-secondary-subtle">Посты</th>
-                <th class="bg-secondary-subtle">Репосты клипов</th>
-                <th class="bg-secondary-subtle">Статьи</th>
-                <th class="bg-secondary-subtle">Сторис</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody">
-    </table>
+</div>
+
+<div class="card shadow bg-body mt-3">
+    <div class="card-header bg-primary-subtle text-primary-emphasis ">
+	    Список пабликов
+	</div>
+    <div class="card-body" >
+        <div class="table-responsive scrollbar">
+            <table class="table table-hover" id="chats_table">
+                <thead>
+                    <tr>
+                        <th style="width: 40px;">#</th>
+                        <th >Паблик</th>
+                        <th class="text-center">Видео</th>
+                        <th class="text-center">Посты</th>
+                        <th class="text-center">Репосты клипов</th>
+                        <th class="text-center">Статьи</th>
+                        <th class="text-center">Сторис</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+            </table>
+        </div>
 </div>
 </div>
 
@@ -50,15 +52,16 @@
                 .then(data => {
                     const tableBody = document.getElementById('tableBody');
                     tableBody.innerHTML = '';
-                    data.forEach(item => {
+                    data.forEach((item, index) => {
                             const row = document.createElement('tr');
                             row.innerHTML = `
+                                <td>${index+1}</td>
                                 <td>${item.name}</td>
-                                <td>${item.posts_count.video}</td>
-                                <td>${item.posts_count.photo}</td>
-                                <td>${item.posts_count.short_video}</td>
-                                <td>${item.posts_count.link}</td>
-                                <td>${item.stories_count}</td>
+                                <td class="text-center">${item.posts_count.video}</td>
+                                <td class="text-center">${item.posts_count.photo}</td>
+                                <td class="text-center">${item.posts_count.short_video}</td>
+                                <td class="text-center">${item.posts_count.link}</td>
+                                <td class="text-center">${item.stories_count}</td>
                             `;
                             tableBody.appendChild(row);
 
