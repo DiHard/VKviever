@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from rest_framework import permissions
 from rest_framework.viewsets import ModelViewSet
 from VKstorage.models import Groups, Posts
 from VKstorage.serializers import AactivityInGroupsSerializer, PostsSerializer, GroupsSerializer
@@ -17,12 +18,15 @@ def all_groups(request):
 class AactivityInGroupsView(ModelViewSet):
     queryset = Groups.objects.all()
     serializer_class = AactivityInGroupsSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 class PostsView(ModelViewSet):
     queryset = Posts.objects.all()
     serializer_class = PostsSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 class GroupsView(ModelViewSet):
     print('Вью в действии')
     queryset = Groups.objects.all()
     serializer_class = GroupsSerializer
+    permission_classes = [permissions.IsAuthenticated]
