@@ -5,8 +5,7 @@ from rest_framework.viewsets import ModelViewSet
 from VKstorage.models import Groups, Posts
 from VKstorage.serializers import AactivityInGroupsSerializer, PostsSerializer, GroupsSerializer
 
-from VKstorage.models import Groups
-from VKstorage.serializers import AactivityInGroupsSerializer
+
 
 @login_required
 def index(request):
