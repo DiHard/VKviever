@@ -10,7 +10,7 @@ from VKstorage.models import Stories, Posts, Groups
 class GroupsSerializer(ModelSerializer):
     class Meta:
         model = Groups
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'short_name']
 
     def validate_name(self, value):
         short_name = value[9 + (value[8:99].find('/')):99]

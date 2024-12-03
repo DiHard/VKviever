@@ -57,7 +57,7 @@
                             const row = document.createElement('tr');
                             row.innerHTML = `
                                 <td>${index+1}</td>
-                                <td>${item.name}</td>
+                                <td><a class="link-dark link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" target="blank" href="https://vk.ru/${item.short_name}">${item.name}</a></td>
                                 <td class="text-center">${item.posts_count.video}</td>
                                 <td class="text-center">${item.posts_count.photo}</td>
                                 <td class="text-center">${item.posts_count.short_video}</td>
@@ -65,7 +65,6 @@
                                 <td class="text-center">${item.stories_count}</td>
                             `;
                             tableBody.appendChild(row);
-
                     });
                 });
         }
