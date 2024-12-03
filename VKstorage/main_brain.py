@@ -38,18 +38,17 @@ def get_stories(owner_id):
     response = requests.get(url, params=params)
     result = response.json()
     # print(result)
-    if 'response' in result:
-        if result['response']['count'] == 0:
-            print(' - Нет сторис доступных к просмотру')
-    elif 'error' in result:
+    if 'error' in result:
         print(' - ОШБИКА получения сторис!')
-        # print(result)
+        print(result)
+    elif result['response']['count'] == 0:
+        print(' - Нет сторис доступных к просмотру')
     else:
         groups = result['response']['items']
-        for group in groups:
-            stories = group['stories']
+        for one_group in groups:
+            # print(one_group)
+            stories = one_group['stories']
             for story in stories:
-                print(story)
                 if not Stories.objects.filter(story_id=story['id']).exists():
                     # if Groups.objects.filter(group_id=story['owner_id'] * -1).exists():
                     new_story = Stories()
@@ -61,7 +60,7 @@ def get_stories(owner_id):
                     new_story.save()
                     print(" - Информация о сторис получена")
                 else:
-                    print(f"Сторис id={story['id']} уже в базе")
+                    print(f"   - Сторис id={story['id']} уже в базе")
 
 
 def get_posts(short_name, count):
