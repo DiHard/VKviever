@@ -37,23 +37,31 @@ def get_stories(owner_id):
         }
     response = requests.get(url, params=params)
     result = response.json()
-    if result['response']['count']==0:
-        print(' - Нет сторис доступных к просмотру')
+    # print(result)
+    if 'response' in result:
+        if result['response']['count'] == 0:
+            print(' - Нет сторис доступных к просмотру')
+    elif 'error' in result:
+        print(' - ОШБИКА получения сторис!')
+        # print(result)
     else:
         groups = result['response']['items']
         for group in groups:
             stories = group['stories']
             for story in stories:
+                print(story)
                 if not Stories.objects.filter(story_id=story['id']).exists():
-                    if Groups.objects.filter(group_id=story['owner_id'] * -1).exists():
-                        new_story = Stories()
-                        new_story.story_id = story['id']
-                        new_story.group = Groups.objects.get(group_id=story['owner_id'] * -1)
-                        new_story.date = datetime.datetime.fromtimestamp(story['date'])
-                        new_story.unix_date = story['date']
-                        new_story.story_type = story['type']
-                        new_story.save()
-                        print(" - Информация о сторис получена")
+                    # if Groups.objects.filter(group_id=story['owner_id'] * -1).exists():
+                    new_story = Stories()
+                    new_story.story_id = story['id']
+                    new_story.group = Groups.objects.get(group_id=story['owner_id'] * -1)
+                    new_story.date = datetime.datetime.fromtimestamp(story['date'])
+                    new_story.unix_date = story['date']
+                    new_story.story_type = story['type']
+                    new_story.save()
+                    print(" - Информация о сторис получена")
+                else:
+                    print(f"Сторис id={story['id']} уже в базе")
 
 
 def get_posts(short_name, count):
@@ -67,7 +75,10 @@ def get_posts(short_name, count):
         }
     response = requests.get(url, params=params)
     result = response.json()
-    if result['response']['count']==0:
+    if 'error' in result:
+        print(' - ОШБИКА получения постов!')
+        print(result)
+    elif result['response']['count']==0:
         print('Нет записей, доступных к просмотру')
     else:
         items = result['response']['items']
@@ -147,9 +158,9 @@ while True:
             group.last_update = datetime.date.today()
             group.save()
             get_posts(group.short_name, count)
-            sleep(2)
+            sleep(5)
             get_stories(group.group_id)
-            sleep(1)
+            sleep(5)
     print(f"Завершен цикл № {nomer}. Пауза 10 секунд")
     print("-- -- -- -- --")
     nomer += 1
