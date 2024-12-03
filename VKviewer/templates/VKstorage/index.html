@@ -11,9 +11,10 @@
         <div>
             <input type="date" id="date_from" style="max-width: 130px;" class="d-inline form-control">
             <input type="date" id="date_to" style="max-width: 130px;" class="d-inline form-control">
-            <button class="btn btn-outline-secondary align-baseline" onclick="load_range()" data-button-name="Участвуем">Сформировать</button>
-            <button class="btn btn-outline-secondary align-baseline" onclick="current_month()" data-button-name="На просчете">Текущий месяц</button>
-            <button class="btn btn-outline-secondary align-baseline" onclick="load_today()" data-button-name="Свободный">Сегодня</button>
+            <button class="btn btn-outline-secondary align-baseline" onclick="load_range()">Сформировать</button>
+            <button class="btn btn-outline-secondary align-baseline" onclick="current_month()">Текущий месяц</button>
+            <button class="btn btn-outline-secondary align-baseline" onclick="yesterday()">Вчера</button>
+            <button class="btn btn-outline-secondary align-baseline" onclick="load_today()">Сегодня</button>
         </div>
     </div>
 </div>
@@ -89,15 +90,17 @@ function load_today() {
 function yesterday() {
   const title_h1 = document.getElementById('h1');
   title_h1.innerHTML = 'Отчет за вчера';
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const day = now.getDate()-1;
+  const now_day = new Date();
+  const yesterday = new Date(now_day);
+  yesterday.setDate(now_day.getDate() - 1);
+  const year = yesterday.getFullYear();
+  const month = yesterday.getMonth();
+  const day = yesterday.getDate();
   const startOfDay = new Date(year, month, day, 0, 0, 1); // 00:00:01
   const endOfDay = new Date(year, month, day, 23, 59, 59); // 23:59:59
   load(Math.floor(startOfDay.getTime() / 1000)+10800, Math.floor(endOfDay.getTime() / 1000)+10800);
     // прописываем дату в поля
-  const today = String(now.getDate()).padStart(2, '0');
+  const today = String(yesterday.getDate()).padStart(2, '0');
   const formattedDate = `${year}-${month+1}-${today}`;
   document.getElementById('date_from').value = formattedDate;
   document.getElementById('date_to').value = formattedDate;
