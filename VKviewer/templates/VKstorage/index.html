@@ -70,7 +70,6 @@
         }
 
 
-
 function load_today() {
   const title_h1 = document.getElementById('h1');
   title_h1.innerHTML = 'Отчет за сегодня';
@@ -85,7 +84,23 @@ function load_today() {
   const formattedDate = `${year}-${month+1}-${today}`;
   document.getElementById('date_from').value = formattedDate;
   document.getElementById('date_to').value = formattedDate;
+}
 
+function yesterday() {
+  const title_h1 = document.getElementById('h1');
+  title_h1.innerHTML = 'Отчет за вчера';
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const day = now.getDate()-1;
+  const startOfDay = new Date(year, month, day, 0, 0, 1); // 00:00:01
+  const endOfDay = new Date(year, month, day, 23, 59, 59); // 23:59:59
+  load(Math.floor(startOfDay.getTime() / 1000)+10800, Math.floor(endOfDay.getTime() / 1000)+10800);
+    // прописываем дату в поля
+  const today = String(now.getDate()).padStart(2, '0');
+  const formattedDate = `${year}-${month+1}-${today}`;
+  document.getElementById('date_from').value = formattedDate;
+  document.getElementById('date_to').value = formattedDate;
 }
 
 function current_month() {
