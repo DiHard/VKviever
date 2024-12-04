@@ -81,6 +81,7 @@ var csrf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value;
 
             const data = {
                   name: document.getElementById('chat_url').value,
+                  short_name: "short_name",
             };
             fetch('/api/groups/', {
                 method: 'POST',
