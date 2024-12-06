@@ -78,7 +78,7 @@ function load_today() {
   const month = now.getMonth();
   const day = now.getDate();
   const startOfDay = new Date(year, month, day, 0, 0, 1); // 00:00:01
-  load(Math.floor(startOfDay.getTime() / 1000)+10800, Math.floor(Date.now() / 1000));
+  load(Math.floor(startOfDay.getTime() / 1000)+3600, Math.floor(Date.now() / 1000));
     // прописываем дату в поля
   const today = String(now.getDate()).padStart(2, '0');
   const formattedDate = `${year}-${month+1}-${today}`;
@@ -97,7 +97,7 @@ function yesterday() {
   const day = yesterday.getDate();
   const startOfDay = new Date(year, month, day, 0, 0, 1); // 00:00:01
   const endOfDay = new Date(year, month, day, 23, 59, 59); // 23:59:59
-  load(Math.floor(startOfDay.getTime() / 1000)+10800, Math.floor(endOfDay.getTime() / 1000)+10800);
+  load(Math.floor(startOfDay.getTime() / 1000)+3600, Math.floor(endOfDay.getTime() / 1000)+3600);
     // прописываем дату в поля
   const today = String(yesterday.getDate()).padStart(2, '0');
   const formattedDate = `${year}-${month+1}-${today}`;
@@ -136,8 +136,8 @@ function load_range() {
   title_h1.innerHTML = 'Отчет за период';
   const formattedDate_from = document.getElementById('date_from').value;
   const formattedDate_to = document.getElementById('date_to').value;
-  day_from = dateToUnixTimestamp(formattedDate_from, 0, 0, 1)+10800
-  day_to = dateToUnixTimestamp(formattedDate_to, 23, 59, 59)+10800
+  day_from = dateToUnixTimestamp(formattedDate_from, 0, 0, 1)+3600
+  day_to = dateToUnixTimestamp(formattedDate_to, 23, 59, 59)+3600
   load(day_from, day_to)
 }
 

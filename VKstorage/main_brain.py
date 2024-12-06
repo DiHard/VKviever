@@ -83,8 +83,8 @@ def get_posts(short_name, count):
         items = result['response']['items']
         for item in items:
             if item['attachments']: attachments = item['attachments']
-            if Posts.objects.filter(post_id=item['id']).exists():
-                post = Posts.objects.get(post_id=item['id'])
+            if Posts.objects.filter(post_id=item['id'], group__short_name=short_name).exists():
+                post = Posts.objects.get(post_id=item['id'], group__short_name=short_name)
                 post.text = (item['text'])[0:50]
                 type_power = 0
                 if item['attachments']:
@@ -110,7 +110,7 @@ def get_posts(short_name, count):
             else:
                 post = Posts()
                 post.post_id = item['id']
-                post.group = Groups.objects.get(group_id=item['owner_id'] * -1)
+                post.group = Groups.objects.get(short_name=short_name)
                 post.date = datetime.datetime.fromtimestamp(item['date'])
                 post.unix_date = item['date']
                 post.text = (item['text'])[0:50]
