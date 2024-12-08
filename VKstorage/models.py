@@ -22,7 +22,7 @@ class Groups(models.Model):
     name = models.CharField('Название группы', max_length=250)
     group_id = models.CharField('Groups id', max_length=250)
     short_name = models.CharField('Короткое имя', max_length=250)
-    last_update = models.DateField('Дата последнего полного информации о группе')
+    last_update = models.DateField('Дата последнего полного обновления информации о группе')
 
     def __str__(self):
         return self.name

@@ -1,5 +1,5 @@
 from datetime import datetime
-
+import time
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
@@ -75,3 +75,59 @@ class AactivityInGroupsSerializer(ModelSerializer):
         date_from = self.context['view'].request.query_params.get('from')
         date_to = self.context['view'].request.query_params.get('to')
         return Stories.objects.filter(group=obj).filter(unix_date__gte=date_from).filter(unix_date__lte=date_to).count()
+
+
+class MonthlyReportSerializer(ModelSerializer):
+    monthly_report = serializers.SerializerMethodField()
+    class Meta:
+        model = Groups
+        fields = ['id', 'name', 'short_name', 'monthly_report']
+
+    def get_monthly_report(self, obj):
+        date_from = self.context['view'].request.query_params.get('from')
+        date_to = self.context['view'].request.query_params.get('to')
+        group = self.context['view'].request.query_params.get('group')
+        posts = Posts.objects.filter(group__short_name=group).filter(unix_date__gte=date_from).filter(unix_date__lte=date_to)
+        stories = Stories.objects.filter(group__short_name=group).filter(unix_date__gte=date_from).filter(unix_date__lte=date_to)
+        next_day = int(date_from)
+        monthly_report = {}
+        while next_day < int(date_to):
+            monthly_report.update({f'{next_day}': {'video': 0, 'photo': 0, 'short_video': 0, 'link': 0, 'stories': 0}})
+            next_day += 86400
+        for q in posts:
+            if q.post_type == 1:
+                for el in monthly_report:
+                    if int(el) <= int(q.unix_date) < int(el)+86400: monthly_report[f'{el}']['video'] += 1
+            if q.post_type == 2:
+                for el in monthly_report:
+                    if int(el) <= int(q.unix_date) < int(el) + 86400: monthly_report[f'{el}']['photo'] += 1
+            if q.post_type == 3:
+                for el in monthly_report:
+                    if int(el) <= int(q.unix_date) < int(el) + 86400: monthly_report[f'{el}']['short_video'] += 1
+            if q.post_type == 4:
+                for el in monthly_report:
+                    if int(el) <= int(q.unix_date) < int(el) + 86400: monthly_report[f'{el}']['link'] += 1
+        for q in stories:
+            for el in monthly_report:
+                if int(el) <= int(q.unix_date) < int(el) + 86400: monthly_report[f'{el}']['stories'] += 1
+        monthly_report_ru = {}
+        for el in reversed(monthly_report):
+            day = time.strftime("%d %B %Y %H:%M:%S", time.localtime(int(el)))
+            months = {
+                "January": "января",
+                "February": "февраля",
+                "March": "марта",
+                "April": "апреля",
+                "May": "мая",
+                "June": "июня",
+                "July": "июля",
+                "August": "августа",
+                "September": "сентября",
+                "October": "октября",
+                "November": "ноября",
+                "December": "декабря",
+            }
+            for en, ru in months.items():
+                day = day.replace(en, ru)
+            monthly_report_ru.update({day: monthly_report[el]})
+        return monthly_report_ru

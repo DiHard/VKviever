@@ -3,8 +3,8 @@ from django.shortcuts import render
 from rest_framework import permissions
 from rest_framework.viewsets import ModelViewSet
 from VKstorage.models import Groups, Posts
-from VKstorage.serializers import AactivityInGroupsSerializer, PostsSerializer, GroupsSerializer
-
+from VKstorage.serializers import AactivityInGroupsSerializer, PostsSerializer, GroupsSerializer, \
+    MonthlyReportSerializer
 
 
 @login_required
@@ -19,13 +19,23 @@ class AactivityInGroupsView(ModelViewSet):
     serializer_class = AactivityInGroupsSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+class MonthlyReportView(ModelViewSet):
+    # queryset = Groups.objects.all()
+    serializer_class = MonthlyReportSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        short_name = self.request.query_params.get('group')
+        print(short_name)
+        queryset = Groups.objects.filter(short_name=short_name)
+        return queryset
+
 class PostsView(ModelViewSet):
     queryset = Posts.objects.all()
     serializer_class = PostsSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 class GroupsView(ModelViewSet):
-    print('Вью в действии')
     queryset = Groups.objects.all()
     serializer_class = GroupsSerializer
     permission_classes = [permissions.IsAuthenticated]

@@ -4,6 +4,7 @@ from VKstorage import views
 
 router = SimpleRouter()
 router.register('api/activityingroups', views.AactivityInGroupsView, basename='activityingroups')
+router.register('api/reportgroups', views.MonthlyReportView, basename='reportgroups')
 router.register('api/posts', views.PostsView)
 router.register('api/groups', views.GroupsView, basename='groups')
 
