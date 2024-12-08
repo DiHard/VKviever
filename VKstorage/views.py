@@ -11,6 +11,11 @@ from VKstorage.serializers import AactivityInGroupsSerializer, PostsSerializer, 
 def index(request):
     return render(request, 'VKstorage/index.html', {'title': 'Формирование отчета'})# Create your views here.
 @login_required
+def monthly_report(request, pk):
+    group = Groups.objects.get(short_name=pk)
+    context = {'title': 'Месячный отчет по группе', 'short_name': pk, 'group': group}
+    return render(request, 'VKstorage/monthly_report.html', context)# Create your views here.
+@login_required
 def all_groups(request):
     return render(request, 'VKstorage/groups.html', {'title': 'Управление пабликами'})# Create your views here.
 

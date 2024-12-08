@@ -12,16 +12,16 @@
             <input type="date" id="date_from" style="max-width: 130px;" class="d-inline form-control">
             <input type="date" id="date_to" style="max-width: 130px;" class="d-inline form-control">
             <button class="btn btn-outline-secondary align-baseline" onclick="load_range()">Сформировать</button>
+            <button class="btn btn-outline-secondary align-baseline" onclick="last_month()">Прошлый месяц</button>
             <button class="btn btn-outline-secondary align-baseline" onclick="current_month()">Текущий месяц</button>
-            <button class="btn btn-outline-secondary align-baseline" onclick="yesterday()">Вчера</button>
-            <button class="btn btn-outline-secondary align-baseline" onclick="load_today()">Сегодня</button>
+            <button class="btn btn-outline-secondary align-baseline" onclick="load_last_30_day()">30 дней</button>
         </div>
     </div>
 </div>
 
 <div class="card shadow bg-body mt-3">
     <div class="card-header bg-primary-subtle text-primary-emphasis ">
-	    Список пабликов
+	    Детальная информация по паблику: {{group.name}}
 	</div>
     <div class="card-body" >
         <div class="table-responsive scrollbar">
@@ -29,7 +29,7 @@
                 <thead>
                     <tr>
                         <th style="width: 40px;">#</th>
-                        <th >Паблик</th>
+                        <th style="width: 250px;">Дата</th>
                         <th class="text-center">Видео</th>
                         <th class="text-center">Посты</th>
                         <th class="text-center">Репосты клипов</th>
@@ -46,47 +46,44 @@
 
 
 <script>
- function load(day_from, day_to) {
-            url = '/api/activityingroups/?from=' + day_from + '&to=' + day_to
+var group = "{{short_name}}"
+ function load(day_from, day_to, group) {
+            url = '/api/monthlyreport/?from=' + day_from + '&to=' + day_to + '&group=' + group
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     const tableBody = document.getElementById('tableBody');
                     tableBody.innerHTML = '';
-                    data.forEach((item, index) => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td>${index+1}</td>
-                                <td>
-                                    <a class="link-dark link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" target="blank" href="/monthly_report/${item.short_name}">
-                                        ${item.name}
-                                    </a>
-                                    <a class="link-dark link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" target="blank" href="https://vk.ru/${item.short_name}">
-                                         ссылка на группу
-                                    </a>
-
-                                </td>
-                                <td class="text-center">${item.posts_count.video}</td>
-                                <td class="text-center">${item.posts_count.photo}</td>
-                                <td class="text-center">${item.posts_count.short_video}</td>
-                                <td class="text-center">${item.posts_count.link}</td>
-                                <td class="text-center">${item.stories_count}</td>
-                            `;
-                            tableBody.appendChild(row);
-                    });
+                    const days = data[0].monthly_report
+                    let index = 1
+                    for (const [key, value] of Object.entries(days)) {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${index}</td>
+                            <td>${key}</a></td>
+                            <td class="text-center">${value.video}</td>
+                            <td class="text-center">${value.photo}</td>
+                            <td class="text-center">${value.short_video}</td>
+                            <td class="text-center">${value.link}</td>
+                            <td class="text-center">${value.stories}</td>
+                        `;
+                        tableBody.appendChild(row);
+                        index = index + 1;
+                    }
                 });
-        }
+            }
 
 
-function load_today() {
+function load_last_30_day() {
+
   const title_h1 = document.getElementById('h1');
-  title_h1.innerHTML = 'Сегодня';
+  title_h1.innerHTML = '30 дней';
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth();
   const day = now.getDate();
   const startOfDay = new Date(year, month, day, 0, 0, 1); // 00:00:01
-  load(Math.floor(startOfDay.getTime() / 1000)+3600, Math.floor(Date.now() / 1000));
+  load(Math.floor(startOfDay.getTime() / 1000)-2505600+3600, Math.floor(Date.now() / 1000), group);
     // прописываем дату в поля
   const today = String(now.getDate()).padStart(2, '0');
   const formattedDate = `${year}-${month+1}-${today}`;
@@ -94,23 +91,28 @@ function load_today() {
   document.getElementById('date_to').value = formattedDate;
 }
 
-function yesterday() {
+function last_month() {
   const title_h1 = document.getElementById('h1');
-  title_h1.innerHTML = 'Вчера';
+  title_h1.innerHTML = 'Прошлый месяц';
   const now_day = new Date();
-  const yesterday = new Date(now_day);
-  yesterday.setDate(now_day.getDate() - 1);
-  const year = yesterday.getFullYear();
-  const month = yesterday.getMonth();
-  const day = yesterday.getDate();
-  const startOfDay = new Date(year, month, day, 0, 0, 1); // 00:00:01
+  const year = now_day.getFullYear();
+  const month = now_day.getMonth()-1;
+  let day = 30;
+  if (month == 0 || month == 2 || month == 4 || month == 6 || month == 7 || month == 9 || month == 11) {
+   day = 31;
+     }
+  if (month == 1) {
+   day = 28
+    }
+  const startOfDay = new Date(year, month, 1, 0, 0, 1); // 00:00:01
   const endOfDay = new Date(year, month, day, 23, 59, 59); // 23:59:59
-  load(Math.floor(startOfDay.getTime() / 1000)+3600, Math.floor(endOfDay.getTime() / 1000)+3600);
+  load(Math.floor(startOfDay.getTime() / 1000)+3600, Math.floor(endOfDay.getTime() / 1000)+3600, group);
     // прописываем дату в поля
-  const today = String(yesterday.getDate()).padStart(2, '0');
-  const formattedDate = `${year}-${month+1}-${today}`;
-  document.getElementById('date_from').value = formattedDate;
-  document.getElementById('date_to').value = formattedDate;
+  const today = String(now_day.getDate()).padStart(2, '0');
+  const formattedDateF = `${year}-${month+1}-01`;
+  const formattedDateT = `${year}-${month+1}-${day}`;
+  document.getElementById('date_from').value = formattedDateF;
+  document.getElementById('date_to').value = formattedDateT;
 }
 
 function current_month() {
@@ -120,7 +122,7 @@ function current_month() {
   const year = now.getFullYear();
   const month = now.getMonth(); // Месяцы в JavaScript нумеруются с 0 (январь)
   const firstDay = new Date(year, month, 1);
-  load(Math.floor(firstDay.getTime() / 1000)+3600, Math.floor(Date.now() / 1000));
+  load(Math.floor(firstDay.getTime() / 1000)+3600, Math.floor(Date.now() / 1000), group);
       // прописываем дату в поля
   const today = String(now.getDate()).padStart(2, '0');
   const formattedDate_from = `${year}-${month+1}-01`;
@@ -146,10 +148,10 @@ function load_range() {
   const formattedDate_to = document.getElementById('date_to').value;
   day_from = dateToUnixTimestamp(formattedDate_from, 0, 0, 1)+3600
   day_to = dateToUnixTimestamp(formattedDate_to, 23, 59, 59)+3600
-  load(day_from, day_to)
+  load(day_from, day_to, group)
 }
 
-load_today()
+load_last_30_day()
 
 </script>
 

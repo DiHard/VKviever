@@ -87,7 +87,7 @@ class MonthlyReportSerializer(ModelSerializer):
         date_from = self.context['view'].request.query_params.get('from')
         date_to = self.context['view'].request.query_params.get('to')
         group = self.context['view'].request.query_params.get('group')
-        posts = Posts.objects.filter(group__short_name=group).filter(unix_date__gte=date_from).filter(unix_date__lte=date_to)
+        posts = Posts.objects.filter(group__short_name=group).filter(unix_date__gte=date_from).filter(unix_date__lte=date_to).order_by('date')
         stories = Stories.objects.filter(group__short_name=group).filter(unix_date__gte=date_from).filter(unix_date__lte=date_to)
         next_day = int(date_from)
         monthly_report = {}
