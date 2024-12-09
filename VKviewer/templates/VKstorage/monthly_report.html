@@ -82,13 +82,22 @@ function load_last_30_day() {
   const year = now.getFullYear();
   const month = now.getMonth();
   const day = now.getDate();
+  if (day < 31) {
+   const last_month = month - 1
+   const last_day = day
+   }
+   else {
+   const last_month = month
+   const last_day = day - 30
+   }
   const startOfDay = new Date(year, month, day, 0, 0, 1); // 00:00:01
   load(Math.floor(startOfDay.getTime() / 1000)-2505600+3600, Math.floor(Date.now() / 1000), group);
     // прописываем дату в поля
   const today = String(now.getDate()).padStart(2, '0');
-  const formattedDate = `${year}-${month+1}-${today}`;
-  document.getElementById('date_from').value = formattedDate;
-  document.getElementById('date_to').value = formattedDate;
+  const formattedDateF = `${year}-${last_month+1}-${last_day}`;
+  const formattedDateT = `${year}-${month+1}-${today}`;
+  document.getElementById('date_from').value = formattedDateF;
+  document.getElementById('date_to').value = formattedDateT;
 }
 
 function last_month() {
