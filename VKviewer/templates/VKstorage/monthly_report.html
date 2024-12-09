@@ -75,29 +75,32 @@ var group = "{{short_name}}"
 
 
 function load_last_30_day() {
+  document.getElementById('h1').innerHTML = '30 дней';
 
-  const title_h1 = document.getElementById('h1');
-  title_h1.innerHTML = '30 дней';
   const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const day = now.getDate();
-  if (day < 31) {
-   const last_month = month - 1
-   const last_day = day
-   }
-   else {
-   const last_month = month
-   const last_day = day - 30
-   }
-  const startOfDay = new Date(year, month, day, 0, 0, 1); // 00:00:01
-  load(Math.floor(startOfDay.getTime() / 1000)-2505600+3600, Math.floor(Date.now() / 1000), group);
-    // прописываем дату в поля
-  const today = String(now.getDate()).padStart(2, '0');
-  const formattedDateF = `${year}-${last_month+1}-${last_day}`;
-  const formattedDateT = `${year}-${month+1}-${today}`;
-  document.getElementById('date_from').value = formattedDateF;
-  document.getElementById('date_to').value = formattedDateT;
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(now.getDate() - 29);
+
+  const yearFrom = thirtyDaysAgo.getFullYear();
+  const monthFrom = thirtyDaysAgo.getMonth() + 1; // Месяцы нумеруются с 0
+  const dayFrom = thirtyDaysAgo.getDate();
+
+  const yearTo = now.getFullYear();
+  const monthTo = now.getMonth() + 1;
+  const dayTo = now.getDate();
+
+
+  const formattedDateFrom = `${yearFrom}-${monthFrom.toString().padStart(2, '0')}-${dayFrom.toString().padStart(2, '0')}`;
+  const formattedDateTo = `${yearTo}-${monthTo.toString().padStart(2, '0')}-${dayTo.toString().padStart(2, '0')}`;
+
+  document.getElementById('date_from').value = formattedDateFrom;
+  document.getElementById('date_to').value = formattedDateTo;
+
+  const startOfDay = new Date(yearFrom, monthFrom-1, dayFrom, 0, 0, 1); // 00:00:01
+
+  const timestampFrom = Math.floor(startOfDay.getTime() / 1000)+3600;
+  const timestampTo = Math.floor(Date.now() / 1000);
+  load(timestampFrom, timestampTo, group);
 }
 
 function last_month() {

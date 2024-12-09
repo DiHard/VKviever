@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 import time
 from rest_framework import serializers
@@ -112,7 +113,7 @@ class MonthlyReportSerializer(ModelSerializer):
                 if int(el) <= int(q.unix_date) < int(el) + 86400: monthly_report[f'{el}']['stories'] += 1
         monthly_report_ru = {}
         for el in reversed(monthly_report):
-            day = time.strftime("%d %B %Y", time.localtime(int(el)))
+            day = time.strftime("%d %B %Y %H:%M:%S", time.localtime(int(el)+int(os.environ['time_adjustment']))) # time_adjustment - корректировка времени
             months = {
                 "January": "января",
                 "February": "февраля",
