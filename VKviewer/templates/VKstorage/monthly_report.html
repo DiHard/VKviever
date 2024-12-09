@@ -12,16 +12,16 @@
             <input type="date" id="date_from" style="max-width: 130px;" class="d-inline form-control">
             <input type="date" id="date_to" style="max-width: 130px;" class="d-inline form-control">
             <button class="btn btn-outline-secondary align-baseline" onclick="load_range()">Сформировать</button>
+            <button class="btn btn-outline-secondary align-baseline" onclick="load_last_30_day()">30 дней</button>
             <button class="btn btn-outline-secondary align-baseline" onclick="last_month()">Прошлый месяц</button>
             <button class="btn btn-outline-secondary align-baseline" onclick="current_month()">Текущий месяц</button>
-            <button class="btn btn-outline-secondary align-baseline" onclick="load_last_30_day()">30 дней</button>
         </div>
     </div>
 </div>
 
 <div class="card shadow bg-body mt-3">
     <div class="card-header bg-primary-subtle text-primary-emphasis ">
-        <b>{{group.name}}</b> - детальная информация по паблику
+        {{group.name}} - детальная информация по паблику
 	</div>
     <div class="card-body" >
         <div class="table-responsive scrollbar">
@@ -29,7 +29,7 @@
                 <thead>
                     <tr>
                         <th style="width: 40px;">#</th>
-                        <th style="width: 250px;">Дата</th>
+                        <th style="width: 550px;">Дата</th>
                         <th class="text-center">Видео</th>
                         <th class="text-center">Посты</th>
                         <th class="text-center">Репосты клипов</th>
@@ -60,7 +60,7 @@ var group = "{{short_name}}"
                         const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>${index}</td>
-                            <td>${key}</a></td>
+                            <td>${key}</td>
                             <td class="text-center">${value.video}</td>
                             <td class="text-center">${value.photo}</td>
                             <td class="text-center">${value.short_video}</td>
@@ -151,7 +151,7 @@ function load_range() {
   load(day_from, day_to, group)
 }
 
-load_last_30_day()
+current_month()
 
 </script>
 

@@ -112,7 +112,7 @@ class MonthlyReportSerializer(ModelSerializer):
                 if int(el) <= int(q.unix_date) < int(el) + 86400: monthly_report[f'{el}']['stories'] += 1
         monthly_report_ru = {}
         for el in reversed(monthly_report):
-            day = time.strftime("%d %B %Y %H:%M:%S", time.localtime(int(el)))
+            day = time.strftime("%d %B %Y", time.localtime(int(el)))
             months = {
                 "January": "января",
                 "February": "февраля",
