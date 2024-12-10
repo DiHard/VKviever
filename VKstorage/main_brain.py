@@ -86,12 +86,12 @@ def get_posts(short_name, count):
             if Posts.objects.filter(post_id=item['id'], group__short_name=short_name).exists():
                 post = Posts.objects.get(post_id=item['id'], group__short_name=short_name)
                 post.text = (item['text'])[0:50]
-                type_power = 0
+                type_power = 0 # в этом участке кода я перебераю медиа вложения и определяю какой тип поста у нас
                 if item['attachments']:
                     for attachment in attachments:
                         if attachment['type'] == 'video':
                             if attachment['video']['type'] == 'short_video':
-                                type_power = 2
+                                type_power = 2 # type_power нужен для защиты от перезаписи значения
                                 post.post_type = 3
                             elif attachment['video']['type'] == 'video':
                                 if type_power<2:
@@ -114,13 +114,12 @@ def get_posts(short_name, count):
                 post.date = datetime.datetime.fromtimestamp(item['date'])
                 post.unix_date = item['date']
                 post.text = (item['text'])[0:50]
-                type_power = 0
-                # TO DO этот кусок можно вывести в функцию
+                type_power = 0 # в этом участке кода я перебераю медиа вложения и определяю какой тип поста у нас
                 if item['attachments']:
                     for attachment in attachments:
                         if attachment['type'] == 'video':
                             if attachment['video']['type'] == 'short_video':
-                                type_power = 2
+                                type_power = 2 # type_power нужен для защиты от перезаписи значения
                                 post.post_type = 3
                             elif attachment['video']['type'] == 'video':
                                 if type_power<2:
